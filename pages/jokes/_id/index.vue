@@ -1,11 +1,16 @@
 <template>
     <div>
+        <div v-if="loading">
+            <span>loading...</span>
+        </div>
+        <div v-else>
         <nuxt-link to="/jokes">
         Back to Jokes
         </nuxt-link>
-        <h2>{{ joke }}</h2>
+        <h2 v-if="joke">{{ joke }}</h2>
         <hr>
         <small>Joke ID: {{ $route.params.id }}</small>
+        </div>
     </div>
 </template>
 
@@ -15,7 +20,8 @@
 export default {
     data() {
         return {
-            joke: {}
+            joke: '',
+            loading: false
         }
     },
   async created() {
@@ -25,11 +31,13 @@ export default {
       }
     };
     try {
+        this.loading = true;
       const res = await this.$axios.get(
         `https://icanhazdadjoke.com/j/${this.$route.params.id}`,
         config
       );
       this.joke = res.data.joke;
+      this.loading = false;
     } catch (err) {
       console.log(err);
     }
